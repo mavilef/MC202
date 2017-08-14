@@ -59,13 +59,14 @@ void addElement(NODE** adress, int elementToAdd){
 
 int MTF(NODE** adress, int elementToSearch){
 //vou ter que criar um ponteiro que armazena o elemento procurado e o proximo
-  NODE *aux = *adress;
+  NODE *aux = *adress, *afterThelast = NULL;
   int counter = 1;
 
-  while(aux->id != elementToSearch){
+  while(aux->id != elementToSearch && aux != NULL){
       aux = aux->next
       counter++;
   }
+  
 
 
 
