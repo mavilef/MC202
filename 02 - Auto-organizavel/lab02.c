@@ -21,7 +21,7 @@ void refreshTheList(NODE **adress, int superiorLimit);
 
 int main(){
 
-  int   N, RElements, costMTF = 0, costT = 0;
+  int   N, RElements, costMTF = 0, costT = 0, costC = 0;
   int* Requisitions = malloc(RElements * sizeof(int));
   NODE *node = NULL;
   NODE *i = NULL;
@@ -42,13 +42,15 @@ int main(){
     for(int j = 0; j < RElements; j++){
       costT = costT + transpose(&node ,Requisitions[j]);
     }
+    printf("costT: %d\n", costT);
+    refreshTheList(&node, N);
 
 
     for(i = node; i != NULL; i = i->next)
       printf("%d ", i->id);
             printf("\n");
 
-    printf("costT: %d\n", costT);
+
 
 
       freeTheList(&node);
@@ -139,25 +141,38 @@ void refreshTheList(NODE **adress, int superiorLimit){
 
 int transpose(NODE** adress, int elementToSearch){
 
-  NODE *aux = *adress, *beforeTheLast = *adress, *beforeTheLast2 = *adress;
+  NODE *aux = *adress, *beforeTarget = *adress, *beforeTarget2 = *adress;
   int counter = 1;
 
   while(aux->id != elementToSearch && aux->next != NULL){
     aux = aux->next;
-    if(counter > 1)
-      beforeTheLast = beforeTheLast->next;
-    if(counter > 2)
-      beforeTheLast2 = beforeTheLast2->next;
-
+    if(beforeTarget->next != aux)
+      beforeTarget = beforeTarget->next;
+    if(beforeTarget2->next != beforeTarget && beforeTarget2->next !=aux)
+      beforeTarget2 = beforeTarget2->next;
     counter++;
   }
 
-  beforeTheLast->next = aux->next;
-    beforeTheLast2->next = aux;
-    aux->next = beforeTheLast;
+  if(aux == *adress){
+    return counter;
+  }else if(beforeTarget == *adress && beforeTarget2 == *adress && aux==(*adress)->next){
+    beforeTarget->next = aux->next;
+    aux->next = beforeTarget;
+    *adress = aux;
+  }else if (beforeTarget2 == *adress && beforeTarget == (*adress)->next && aux==beforeTarget->next){
+    beforeTarget->next = aux->next;
+    beforeTarget2->next = aux;
+    aux->next = beforeTarget;
+    *adress = beforeTarget2;
+
+  }else{
+    beforeTarget->next = aux->next;
+    beforeTarget2->next = aux;
+    aux->next = beforeTarget;
+  }
 
   return counter;
-  printf("here\n");
+
 }
 
 int count(NODE** adress, int elementToSearch){
