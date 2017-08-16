@@ -176,6 +176,17 @@ int transpose(NODE** adress, int elementToSearch){
 }
 
 int count(NODE** adress, int elementToSearch){
+  NODE *aux = *adress;
+
+  while(aux->id != elementToSearch && aux->next != NULL){
+      beforeTheLast = aux;
+      aux = aux->next;
+      counter++;
+  }
+  aux->counter++;
+
+  
+
   return 0;
 
 
