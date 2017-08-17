@@ -45,6 +45,11 @@ int main(){
     printf("costT: %d\n", costT);
     refreshTheList(&node, N);
 
+    for(int j = 0; j < RElements; j++){
+      costC = costC + count(&node ,Requisitions[j]);
+    }
+    printf("costC: %d\n", costC);
+
 
     for(i = node; i != NULL; i = i->next)
       printf("%d ", i->id);
@@ -176,16 +181,35 @@ int transpose(NODE** adress, int elementToSearch){
 }
 
 int count(NODE** adress, int elementToSearch){
-  NODE *aux = *adress;
+  NODE *aux = *adress, *beforeTarget = *adress, *positioner = *adress;
+  int counter = 1;
 
   while(aux->id != elementToSearch && aux->next != NULL){
-      beforeTheLast = aux;
-      aux = aux->next;
-      counter++;
+    printf("here\n");
+    beforeTarget=aux;
+    aux=aux->next;
+    counter++;
   }
-  aux->counter++;
 
-  
+  if(aux->id != elementToSearch && aux->next == NULL)
+    return counter;
+
+  beforeTarget->next = aux->next;
+  (aux->counter)++;
+
+  if(aux->counter >= positioner->counter){
+    aux->next = positioner;
+    *adress = aux;
+    return counter;
+  }
+
+  while((positioner->next)->counter > aux->counter && positioner->next != NULL)
+    positioner = positioner->next;
+
+  aux->next = positioner->next;
+  positioner->next = aux;
+  return counter;
+
 
   return 0;
 
