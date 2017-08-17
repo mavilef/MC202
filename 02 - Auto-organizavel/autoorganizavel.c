@@ -1,6 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 
+
 struct NODE{
 
   int id;
@@ -21,42 +22,32 @@ void refreshTheList(NODE **adress, int superiorLimit);
 
 int main(){
 
-  int   N, RElements, costMTF = 0, costT = 0, costC = 0;
-  int* Requisitions = malloc(RElements * sizeof(int));
-  NODE *node = NULL;
-  NODE *i = NULL;
-
+  int   N, RElements, costMTF = 0, costT = 0, costC = 0 , j;
   scanf("%d %d", &N, &RElements);
+  int *Requisitions = malloc(RElements*sizeof(int));
+  NODE *node = NULL;
 
-  for(int j = 0; j < RElements; j++)
+  for(j = 0; j < RElements; j++)
     scanf("%d", &Requisitions[j]);
 
-    refreshTheList(&node, N);
+  refreshTheList(&node, N);
 
-    for(int j = 0; j < RElements; j++){
+    for(j = 0; j < RElements; j++){
       costMTF = costMTF + MTF(&node ,Requisitions[j]);
-    }
-    printf("costMTF: %d\n", costMTF);
-    refreshTheList(&node, N);
+   }
 
-    for(int j = 0; j < RElements; j++){
+  refreshTheList(&node, N);
+
+    for(j = 0; j < RElements; j++){
       costT = costT + transpose(&node ,Requisitions[j]);
-    }
-    printf("costT: %d\n", costT);
-    refreshTheList(&node, N);
+	}
 
-    for(int j = 0; j < RElements; j++){
+  refreshTheList(&node, N);
+
+    for(j = 0; j < RElements; j++){
       costC = costC + count(&node ,Requisitions[j]);
     }
-    printf("costC: %d\n", costC);
-
-
-    for(i = node; i != NULL; i = i->next)
-      printf("%d ", i->id);
-            printf("\n");
-
-
-
+    printf("%d %d %d\n", costMTF, costT, costC);
 
       freeTheList(&node);
 
@@ -90,6 +81,9 @@ int MTF(NODE** adress, int elementToSearch){
   NODE *aux = *adress, *beforeTheLast = NULL;
   int counter = 1;
 
+  if(aux->id == elementToSearch && aux == *adress){
+    return counter;
+  }
 
   while(aux->id != elementToSearch && aux->next != NULL){
       beforeTheLast = aux;
@@ -111,21 +105,20 @@ int MTF(NODE** adress, int elementToSearch){
 }
 
 void freeTheList(NODE **adress){
-  NODE *actual = NULL;
-  NODE *afterActual;
+  NODE *actual = *adress;
+  NODE *beforeActual = NULL;
 
-  for(actual  = *adress, afterActual = NULL; actual != NULL; actual = actual->next){
-
+  while(actual != NULL){
     if(actual->next == NULL){
       free(actual);
       *adress = NULL;
       actual = NULL;
-          break;
+      break;
     }else{
-      afterActual = actual->next;
-      free(actual);
-      actual = afterActual;
-      afterActual = NULL;
+      beforeActual = actual;
+			actual = actual->next;
+      free(beforeActual);
+      beforeActual = NULL;
     }
 
   }
@@ -134,11 +127,15 @@ void freeTheList(NODE **adress){
 }
 
 void refreshTheList(NODE **adress, int superiorLimit){
-  if(*adress = NULL){
+	int j = 0;
+  if(*adress == NULL){
+
+    for(j = 0; j < superiorLimit; j++)
+      addElement(adress, j+1);
     return;
   }else{
     freeTheList(adress);
-    for(int j = 0; j < superiorLimit; j++){
+    for(j = 0; j < superiorLimit; j++){
       addElement(adress, j+1);
     }
   }
@@ -150,6 +147,7 @@ int transpose(NODE** adress, int elementToSearch){
   int counter = 1;
 
   while(aux->id != elementToSearch && aux->next != NULL){
+	
     aux = aux->next;
     if(beforeTarget->next != aux)
       beforeTarget = beforeTarget->next;
@@ -182,17 +180,21 @@ int transpose(NODE** adress, int elementToSearch){
 
 int count(NODE** adress, int elementToSearch){
   NODE *aux = *adress, *beforeTarget = *adress, *positioner = *adress;
-  int counter = 1;
+  int costCounter = 1;
+
+  if(aux->id == elementToSearch && aux == *adress){
+    aux->counter++;
+    return costCounter;
+  }
 
   while(aux->id != elementToSearch && aux->next != NULL){
-    printf("here\n");
     beforeTarget=aux;
     aux=aux->next;
-    counter++;
+    costCounter++;
   }
 
   if(aux->id != elementToSearch && aux->next == NULL)
-    return counter;
+    return costCounter;
 
   beforeTarget->next = aux->next;
   (aux->counter)++;
@@ -200,20 +202,15 @@ int count(NODE** adress, int elementToSearch){
   if(aux->counter >= positioner->counter){
     aux->next = positioner;
     *adress = aux;
-    return counter;
+    return costCounter;
   }
 
-  while((positioner->next)->counter > aux->counter && positioner->next != NULL)
+  while(positioner->next->counter > aux->counter && positioner->next != NULL)
     positioner = positioner->next;
 
   aux->next = positioner->next;
   positioner->next = aux;
-  return counter;
-
-
-  return 0;
-
-
+  return costCounter;
 
 
 }
