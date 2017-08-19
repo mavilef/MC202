@@ -92,10 +92,10 @@ void addElement(NODE** adress, int elementToAdd){
 
 }
 // MTF procura elementos e rearranja de acordo com o método move-to-front.
-// retorna o custo para procurar.
+// Retorna o custo ao procurar.
 
 int MTF(NODE** adress, int elementToSearch){
-// inicialização de um auxiliar(aux) que percorrerá a lista para encontrar o elemento.
+// Inicialização de um auxiliar(aux) que percorrerá a lista para encontrar o elemento.
 // beforeTheLast apontará para um elemento anterior da lista.
   NODE *aux = *adress, *beforeTheLast = NULL;
   int counter = 1;
@@ -103,17 +103,20 @@ int MTF(NODE** adress, int elementToSearch){
   if(aux->id == elementToSearch && aux == *adress){
     return counter;
   }
-
+//Percorre toda a lista até encontrar o elemento.
+//mantém beforeTheLast uma posição antes do elemento.
   while(aux->id != elementToSearch && aux->next != NULL){
       beforeTheLast = aux;
       aux = aux->next;
+//adiciona o custo a cada passada
       counter++;
   }
 
+//trata o caso do elemento estar na primeira posição.
   if(aux->id == elementToSearch && beforeTheLast == NULL){
       return counter;
   }else{
-
+//caso geral
     beforeTheLast->next = aux->next;
     aux->next = *adress;
     *adress = aux;
@@ -123,6 +126,7 @@ int MTF(NODE** adress, int elementToSearch){
   return counter;
 }
 
+//função que libera a lista.
 void freeTheList(NODE **adress){
   NODE *actual = *adress;
   NODE *beforeActual = NULL;
@@ -144,7 +148,8 @@ void freeTheList(NODE **adress){
 
 
 }
-
+//função que reseta a lista para os valores padrão.
+//usado para aplicar outro método de busca
 void refreshTheList(NODE **adress, int superiorLimit){
 	int j = 0;
   if(*adress == NULL){
@@ -160,14 +165,25 @@ void refreshTheList(NODE **adress, int superiorLimit){
   }
 }
 
-int transpose(NODE** adress, int elementToSearch){
 
+// Transpose procura elementos e rearranja de acordo com o método transpose.
+// Retorna o custo ao procurar.
+
+int transpose(NODE** adress, int elementToSearch){
+	//aux é o ponteiro auxiliar que apontará para o elemento a ser procurado
+	//beforeTarget apontará para a posição anterior ao aux.
+	//beforeTarget2 apontará para a posição anterior a beforeTarget.	
   NODE *aux = *adress, *beforeTarget = *adress, *beforeTarget2 = *adress;
   int counter = 1;
 
+//Percorre a lista para encontrar o elemento
+//Mantendo beforeTarget e beforeTarget2 nass suas posições.
   while(aux->id != elementToSearch && aux->next != NULL){
 
     aux = aux->next;
+	//Sincroniza o movimento de beforeTarget e beforeTarget2
+	//de forma que percorra um estando com 1 poição adiantado em
+	//relação ao outro. 
     if(beforeTarget->next != aux)
       beforeTarget = beforeTarget->next;
     if(beforeTarget2->next != beforeTarget && beforeTarget2->next !=aux)
@@ -175,18 +191,23 @@ int transpose(NODE** adress, int elementToSearch){
     counter++;
   }
 
+//Tratamento de casos específicos:
+
+//Caso o elemento procurado esteja na primeira posição da lista.
   if(aux == *adress){
     return counter;
+//Caso o elemento esteja na segunda posição da lista.
   }else if(beforeTarget == *adress && beforeTarget2 == *adress && aux==(*adress)->next){
     beforeTarget->next = aux->next;
     aux->next = beforeTarget;
     *adress = aux;
+//Caso o elemento esteja na terceira posição da lista.
   }else if (beforeTarget2 == *adress && beforeTarget == (*adress)->next && aux==beforeTarget->next){
     beforeTarget->next = aux->next;
     beforeTarget2->next = aux;
     aux->next = beforeTarget;
     *adress = beforeTarget2;
-
+//Caso geral.
   }else{
     beforeTarget->next = aux->next;
     beforeTarget2->next = aux;
@@ -197,36 +218,55 @@ int transpose(NODE** adress, int elementToSearch){
 
 }
 
+// Count procura elementos e rearranja de acordo com o método count.
+// Utiliza o campo counter da struct.
+// Retorna o custo ao procurar.
+
 int count(NODE** adress, int elementToSearch){
+	// aux percorrerá a lista para busca do elemento, apontará para o elemento procurado.
+	// beforeTarget apontará para um elemento antes da posição do elemento.
+	//positioner é um ponteiro que percorrerá a lista para encontrar a posição anterior
+	//de onde o elemento deve ser adicionado.
+
   NODE *aux = *adress, *beforeTarget = *adress, *positioner = *adress;
   int costCounter = 1;
 
+//trata o caso do elemento estar na primeira posição.
   if(aux->id == elementToSearch && aux == *adress){
     aux->counter++;
     return costCounter;
   }
-
+//Percorre a lista e posiciona aux no elemento e beforeTarget na
+//posição anterior.
   while(aux->id != elementToSearch && aux->next != NULL){
     beforeTarget=aux;
     aux=aux->next;
     costCounter++;
   }
-
+//caso não encontre o elemento.
   if(aux->id != elementToSearch && aux->next == NULL)
     return costCounter;
 
+//retira o elemento da lista, para posterior reposicionamento.
   beforeTarget->next = aux->next;
   (aux->counter)++;
 
+//trata o caso do elemento ter de ser adicionado na primeira posição.
   if(aux->counter >= positioner->counter){
     aux->next = positioner;
     *adress = aux;
     return costCounter;
   }
 
+//Percorre a lista a fim de encontrar a posição onde o elemento deve ser adicionado.
+//ou seja, na posição onde o próximo elemento possui counter maior ou igual 
+//ao elemento a ser adicionado.
+//positioner então termina em uma posição antes da posição onde deve ser adicionado o 
+//novo elemento.
   while(positioner->next->counter > aux->counter && positioner->next != NULL)
     positioner = positioner->next;
 
+//insere o elemento na posição encontrada. 
   aux->next = positioner->next;
   positioner->next = aux;
   return costCounter;
