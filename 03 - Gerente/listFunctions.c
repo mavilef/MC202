@@ -57,7 +57,6 @@ void diskInitializer(DISK **drive, int freeSpace){
 
 }
 
-
 void ArchiveInsertion(DISK *drive, char archiveName[], int ArchiveSize){
 
 	NODE *NewArchive = malloc(sizeof(NODE));
@@ -94,27 +93,41 @@ void ArchiveInsertion(DISK *drive, char archiveName[], int ArchiveSize){
 	}else{
 		if(smallest->previous != NULL){
 			smallest->size -= NewArchive->size;
-			smallest->previous->next = NewArchive;
-			NewArchive->next = smallest;
-			NewArchive->previous = smallest->previous;
-			smallest->previous = NewArchive;
-
+			if(smallest->size == 0){
+				smallest->previous->next = NewArchive;
+				NewArchive->next = smallest->next;
+				NewArchive->previous = smallest->previous;
+				smallest->next->previous = NewArchive;
+				free(smallest);
+			}else{
+				smallest->previous->next = NewArchive;
+				NewArchive->next = smallest;
+				NewArchive->previous = smallest->previous;
+				smallest->previous = NewArchive;
+			}
 		}else if(smallest->previous == NULL){
 			smallest->size -= NewArchive->size;
-			smallest->previous = NewArchive;
-			NewArchive->next = smallest;
-			drive->listHead = NewArchive;
+			if(smallest->size == 0){
+				NewArchive->next = smallest->next;
+				if(smallest->next != NULL)
+					smallest->next->previous = NewArchive;
+				drive->listHead = NewArchive;
+				free(smallest);
+			}else{
+				smallest->previous = NewArchive;
+				NewArchive->next = smallest;
+				drive->listHead = NewArchive;
+			}
 		}
 	}
 
 }
 
-
 void ArchiveRemover(DISK *drive, char archiveName[]){
 
 	NODE *aux = drive->listHead;
 
-	while(strcmp(aux->arqName, archiveName) != 0 && aux != NULL)
+	while(aux != NULL && strcmp(aux->arqName, archiveName) != 0)
 		aux = aux->next;
 
 	if(aux == NULL){
@@ -134,12 +147,26 @@ void catenateFreeSpaces(DISK *drive){
 			aux->size += aux->next->size;
 			aux2= aux->next;
 			aux->next = aux->next->next;
-			free(aux2);
 			if(aux->next != NULL)
 				aux->next->previous = aux;
+			free(aux2);
 		}else{
 			aux = aux->next;
 		}
 	}
+
+}
+
+void otimize(DISK *drive){
+
+	NODE *tail = drive->listHead;
+	NODE *Repositioner = drive->listHead;
+
+	while(tail->next != NULL)
+		tail= tail->next;
+
+	while(repositioner)
+
+
 
 }

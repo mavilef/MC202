@@ -13,8 +13,7 @@ int main(){
 	int j = 0;
 
 
-	for(; numberOfOperations != 0;){
-		scanf("%d", &numberOfOperations);
+	while(scanf("%d", &numberOfOperations) != 0){
 		if(numberOfOperations == 0){
 			break;
 		}
@@ -38,11 +37,21 @@ int main(){
 			}
 
 		}
-
-		for(NODE *i = drive->listHead; i != NULL; i = i->next){
+		printf("| ");
+		NODE *i = NULL, *j = NULL;
+		for(i = drive->listHead; i != NULL; i = i->next){
 			printf("%s - %d - %d |", i->arqName, i->size, i->free);
-
+			if(i->next == NULL)
+				j = i;
 		}
+		printf("\n");
+		while (j != NULL) {
+			printf("%s - %d - %d |", j->arqName, j->size, j->free);
+			j = j->previous;
+		}
+		printf("\n");
+
+
 
 	}
 
