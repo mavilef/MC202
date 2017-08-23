@@ -28,12 +28,15 @@ int main(){
 				scanf("%s", arqName);
 				scanf("%s", sizeArq);
 				sizeArqNum = sizeConversor(sizeArq);
-				ArchiveInsertion(drive, arqName, sizeArqNum);
+				if(drive->error == 0)
+					ArchiveInsertion(drive, arqName, sizeArqNum);
 			}else if(strcmp(operation, "remove") == 0){
 				scanf("%s", arqName);
-				ArchiveRemover(drive, arqName);
+				if(drive->error == 0)
+					ArchiveRemover(drive, arqName);
 			}else if(strcmp(operation, "otimiza") == 0){
-				//otimize();
+				if(drive->error == 0)
+					otimize(drive);
 			}
 
 		}

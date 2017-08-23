@@ -1,12 +1,5 @@
-9
+2
 8Kb
-insere arq0001 2Kb
-insere arq0002 2Kb
-insere arq0003 2Kb
-insere arq0004 1KB
-remove arq0001
-insere arq0005 2Kb
-remove arq0004
-remove arq0002
-insere arq0006 2Kb
+insere arq0001 4Kb
+insere 02 4Kb
 0

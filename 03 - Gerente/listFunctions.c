@@ -4,6 +4,60 @@
 #include<math.h>
 #include"interface.h"
 
+void catenateFreeSpaces(DISK *drive){
+	NODE *aux = drive->listHead, *aux2 = NULL;
+
+	while(aux->next != NULL){
+		if(aux->free == 1 && aux->next->free == 1){
+			aux->size += aux->next->size;
+			aux2= aux->next;
+			aux->next = aux->next->next;
+			if(aux->next != NULL)
+				aux->next->previous = aux;
+			free(aux2);
+		}else{
+			aux = aux->next;
+		}
+	}
+
+}
+
+void otimize(DISK *drive){
+
+	NODE *tail = drive->listHead;
+	NODE *repositioner = drive->listHead;
+
+	while(tail->next != NULL)
+		tail= tail->next;
+
+	while(repositioner != tail){
+		if(repositioner->free == 1){
+			if(repositioner->previous == NULL){
+				drive->listHead = repositioner->next;
+				drive->listHead->previous = NULL;
+				repositioner->next = tail->next;
+				repositioner->previous = tail;
+				tail->next = repositioner;
+				if(repositioner->next != NULL)
+					repositioner->next->previous = repositioner;
+				repositioner = drive->listHead;
+			}else{
+				repositioner->previous->next = repositioner->next;
+				repositioner->next->previous = repositioner->previous;
+				repositioner->next = tail->next;
+				repositioner->previous = tail;
+				tail->next = repositioner;
+				if(repositioner->next != NULL)
+					repositioner->next->previous = repositioner;
+				repositioner = drive->listHead;
+			}
+		}else{
+			repositioner = repositioner->next;
+		}
+	}
+	catenateFreeSpaces(drive);
+}
+
 void diskInitializer(DISK **drive, int freeSpace){
 
 	if(*drive == NULL){
@@ -77,20 +131,25 @@ void ArchiveInsertion(DISK *drive, char archiveName[], int ArchiveSize){
 		}
 		aux = aux->next;
 	}
+
 	if(aux == NULL && smallest == NULL){
-		/*otimiza()
+		otimize(drive);
+		aux = drive->listHead;
 		while(aux != NULL){
 			if(aux->size >= ArchiveSize && aux->free == 1 && smallest == NULL){
 				smallest = aux;
-			}else if(aux->size >= ArchiveSize && aux->free == 1 && aux->size < smallest && smallest != NULL){
+			}else if(aux->size >= ArchiveSize && aux->free == 1 && aux->size < smallest->size && smallest != NULL){
 				smallest = aux;
 			}
 			aux = aux->next;
 		}
+		if(aux == NULL && smallest == NULL){
+			drive->error = 1;
+			printf("ERRO: disco cheio\n");
+		}
 
-		//fazer caso não ache mesmo assim.
-		*/
 	}else{
+		//O erro está por aqui...
 		if(smallest->previous != NULL){
 			smallest->size -= NewArchive->size;
 			if(smallest->size == 0){
@@ -137,36 +196,4 @@ void ArchiveRemover(DISK *drive, char archiveName[]){
 		strcpy(aux->arqName,"free");
 		catenateFreeSpaces(drive);
 	}
-}
-
-void catenateFreeSpaces(DISK *drive){
-	NODE *aux = drive->listHead, *aux2 = NULL;
-
-	while(aux->next != NULL){
-		if(aux->free == 1 && aux->next->free == 1){
-			aux->size += aux->next->size;
-			aux2= aux->next;
-			aux->next = aux->next->next;
-			if(aux->next != NULL)
-				aux->next->previous = aux;
-			free(aux2);
-		}else{
-			aux = aux->next;
-		}
-	}
-
-}
-
-void otimize(DISK *drive){
-
-	NODE *tail = drive->listHead;
-	NODE *Repositioner = drive->listHead;
-
-	while(tail->next != NULL)
-		tail= tail->next;
-
-	while(repositioner)
-
-
-
 }
