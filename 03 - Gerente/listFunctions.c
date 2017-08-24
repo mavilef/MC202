@@ -149,14 +149,14 @@ void ArchiveInsertion(DISK *drive, char archiveName[], int ArchiveSize){
 		}
 
 	}else{
-		//O erro está por aqui...
 		if(smallest->previous != NULL){
 			smallest->size -= NewArchive->size;
 			if(smallest->size == 0){
 				smallest->previous->next = NewArchive;
 				NewArchive->next = smallest->next;
 				NewArchive->previous = smallest->previous;
-				smallest->next->previous = NewArchive;
+				if (smallest->next != NULL)
+					smallest->next->previous = NewArchive;
 				free(smallest);
 			}else{
 				smallest->previous->next = NewArchive;
@@ -196,4 +196,41 @@ void ArchiveRemover(DISK *drive, char archiveName[]){
 		strcpy(aux->arqName,"free");
 		catenateFreeSpaces(drive);
 	}
+}
+
+void EstimateUsage(DISK *drive){
+	char blocks[9];
+	int BlockDivision = (drive->diskSize)/8;
+	int usedBlock = 0, counter= 0, i = 0, j = 0;
+	NODE *aux = (drive->listHead);
+
+	while(aux != NULL){
+		if(aux->free == 0){
+			usedBlock += aux->size;
+		}
+		counter += aux->size;
+
+		if(counter/BlockDivision > 0) {
+			j = 0;
+			while(j < counter/BlockDivision){
+				double freeBlock = (counter - usedBlock) % BlockDivision;
+				double check = freeBlock/(float)BlockDivision;
+				if(check >= 0 && check <= .25)
+					blocks[i+j] = ' ';
+				else if(check > .25 && check <= .75)
+				 	blocks[i+j] = '-';
+				else if (check > .75 && check <= 1.0)
+					blocks[i+j] = '#';
+				j++;
+			}
+			counter = 0;
+			usedBlock = 0;
+			i+= j;
+		}
+		aux = aux->next;
+	}
+
+	for(i = 0; i < 8; i++)
+		printf("[%c]", blocks[i]);
+	printf("\n");
 }

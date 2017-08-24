@@ -1,5 +1,13 @@
-2
+3
 8Kb
 insere arq0001 4Kb
 insere 02 4Kb
+remove 02
+5
+8Kb
+insere arq0001 4Kb
+insere 02 4Kb
+remove 02
+insere 03 1Kb
+otimiza
 0

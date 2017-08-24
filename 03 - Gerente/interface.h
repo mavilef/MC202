@@ -27,6 +27,7 @@ void ArchiveInsertion(DISK *drive, char archiveName[], int ArchiveSize);
 void ArchiveRemover(DISK *drive, char archiveName[]);
 void catenateFreeSpaces(DISK *drive);
 void otimize(DISK *drive);
+void EstimateUsage(DISK *drive);
 
 #include"listFunctions.c"
 

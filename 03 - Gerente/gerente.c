@@ -53,8 +53,9 @@ int main(){
 			j = j->previous;
 		}
 		printf("\n");
-
-
+		
+		if(drive->error == 0)
+			EstimateUsage(drive);
 
 	}
 
