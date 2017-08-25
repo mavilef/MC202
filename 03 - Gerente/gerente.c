@@ -8,13 +8,14 @@ int sizeConversor(char textSize[]);
 
 int main(){
 
-	int numberOfOperations = 1, sizeDiskNum, sizeArqNum, j = 0;
+	int numberOfOperations, sizeDiskNum, sizeArqNum, j = 0;
 	char operation[8], arqName[11], sizeArq[7], sizeDisk[7];
 	DISK *drive = NULL;
 
 
 
-	while(scanf("%d", &numberOfOperations) != 0){
+	while(1){
+		scanf("%d", &numberOfOperations);
 		if(numberOfOperations == 0){
 			break;
 		}
@@ -24,7 +25,6 @@ int main(){
 
 		for(j = 0; j < numberOfOperations; j++){
 			scanf("%s", operation);
-			getchar();
 
 			if(strcmp(operation, "insere") == 0){
 				scanf("%s", arqName);
@@ -47,8 +47,10 @@ int main(){
 			EstimateUsage(drive);
 		else
 			printf("ERRO: disco cheio\n");
+
 	}
 
+	freeTheDisk(&drive);
 	return 0;
 }
 

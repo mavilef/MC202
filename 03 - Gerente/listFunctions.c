@@ -56,6 +56,21 @@ void diskInitializer(DISK **drive, int freeSpace){
 	}
 }
 
+void freeTheDisk(DISK **drive){
+		if(*drive != NULL){
+		NODE *aux = (*drive)->listHead;
+		NODE *aux2 = NULL;
+		while(aux->next != NULL){
+			aux2 = aux;
+			aux= aux->next;
+			free(aux2);
+		}
+		free(aux);
+		free(*drive);
+		(*drive) = NULL;
+	}
+}
+
 void otimize(DISK *drive){
 
 	NODE *tail = drive->listHead;
@@ -223,10 +238,10 @@ void EstimateUsage(DISK *drive){
 			aux2 = aux->size;
 			while(aux2 > 0){
 				if(count.total + aux2 >= blockDivision){
-					aux2 -= (blockDivision- count.total);	
+					aux2 -= (blockDivision- count.total);
 					if(aux->free == 1)
 						count.freeSize += (blockDivision- count.total);
-					else 
+					else
 						count.usedSize += (blockDivision- count.total);
 					count.total += (blockDivision- count.total);
 					printState(count);
@@ -238,7 +253,7 @@ void EstimateUsage(DISK *drive){
 					count.total += aux2;
 					if(aux->free == 1)
 						count.freeSize += aux2;
-					else 
+					else
 						count.usedSize += aux2;
 					aux2 = 0;
 
