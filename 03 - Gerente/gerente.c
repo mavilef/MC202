@@ -1,5 +1,6 @@
 #include<stdio.h>
 #include<string.h>
+#include<math.h>
 #include"interface.h"
 
 
@@ -7,10 +8,10 @@ int sizeConversor(char textSize[]);
 
 int main(){
 
-	int numberOfOperations = 1, sizeDiskNum, sizeArqNum;
+	int numberOfOperations = 1, sizeDiskNum, sizeArqNum, j = 0;
 	char operation[8], arqName[11], sizeArq[7], sizeDisk[7];
 	DISK *drive = NULL;
-	int j = 0;
+
 
 
 	while(scanf("%d", &numberOfOperations) != 0){
@@ -40,35 +41,23 @@ int main(){
 			}
 
 		}
-		printf("| ");
-		NODE *i = NULL, *j = NULL;
-		for(i = drive->listHead; i != NULL; i = i->next){
-			printf("%s - %d - %d |", i->arqName, i->size, i->free);
-			if(i->next == NULL)
-				j = i;
-		}
-		printf("\n");
-		while (j != NULL) {
-			printf("%s - %d - %d |", j->arqName, j->size, j->free);
-			j = j->previous;
-		}
-		printf("\n");
-		
-		if(drive->error == 0)
+
+		if(drive->error == 0){
 			EstimateUsage(drive);
+			printf("\n");
+		}
 
 	}
 
 	return 0;
 }
 
-
 int sizeConversor(char textSize[]){
 
 	int size = strlen(textSize);
-	int power = 0, coeficient = 0, j = 1;
+	int power = 0, coeficient = 0, j = 1 ,i = 0;
 
-	for (int i = size; i >= 0; i--){
+	for (i = size; i >= 0; i--){
 		if(textSize[i] == 'b')
 			continue;
 		else if(textSize[i] > 64 && textSize[i] < 91){
