@@ -24,6 +24,7 @@ int main(){
 
 		for(j = 0; j < numberOfOperations; j++){
 			scanf("%s", operation);
+			getchar();
 
 			if(strcmp(operation, "insere") == 0){
 				scanf("%s", arqName);
@@ -42,11 +43,10 @@ int main(){
 
 		}
 
-		if(drive->error == 0){
+		if(drive->error == 0)
 			EstimateUsage(drive);
-			printf("\n");
-		}
-
+		else
+			printf("ERRO: disco cheio\n");
 	}
 
 	return 0;

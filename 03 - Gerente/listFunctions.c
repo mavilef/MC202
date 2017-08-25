@@ -95,7 +95,7 @@ void otimize(DISK *drive){
 void ArchiveInsertion(DISK *drive, char archiveName[], int ArchiveSize){
 
 	NODE *NewArchive = malloc(sizeof(NODE));
-  strcpy(NewArchive->arqName,archiveName);
+ 	strcpy(NewArchive->arqName,archiveName);
 	NewArchive->size = ArchiveSize;
 	NewArchive->next = NULL;
 	NewArchive->previous = NULL;
@@ -126,7 +126,6 @@ void ArchiveInsertion(DISK *drive, char archiveName[], int ArchiveSize){
 		}
 		if(aux == NULL && smallest == NULL){
 			drive->error = 1;
-			printf("ERRO: disco cheio\n");
 			return;
 		}
 
@@ -247,6 +246,7 @@ void EstimateUsage(DISK *drive){
 			}
 			aux=aux->next;
 		}
+		printf("\n");
 }
 
 void printState(DISKUSAGE counter){
