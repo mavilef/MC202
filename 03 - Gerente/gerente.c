@@ -1,6 +1,6 @@
+//Marcelo Martins Vilela Filho RA 202619 - Engenharia de Computação
 #include<stdio.h>
 #include<string.h>
-#include<math.h>
 #include"interface.h"
 
 
@@ -14,11 +14,7 @@ int main(){
 
 
 
-	while(1){
-		scanf("%d", &numberOfOperations);
-		if(numberOfOperations == 0){
-			break;
-		}
+	while(scanf("%d", &numberOfOperations) && numberOfOperations != 0){
 		scanf("%s", sizeDisk);
 		sizeDiskNum = sizeConversor(sizeDisk);
 		diskInitializer(&drive, sizeDiskNum);
@@ -39,13 +35,24 @@ int main(){
 			}else if(strcmp(operation, "otimiza") == 0){
 				if(drive->error == 0)
 					otimize(drive);
+			}else{
+				printf("Operacao Inexistente, digite uma operacao valida.\n");
+				printf("Tente: insere <nome> <tamanho>, remove <nome> ou otimiza\n");
+				j--;
 			}
 
 		}
+		/*
+		for(NODE *i = drive->listHead; i != NULL; i = i->next){
+ 			printf("%s - %d - %d |", i->arqName, i->size, i->free);
+ 
+ 		}
+ 		printf("\n");
+ 		*/
 
 		if(drive->error == 0)
 			EstimateUsage(drive);
-		else
+		else if(drive->error == 1)
 			printf("ERRO: disco cheio\n");
 
 	}
@@ -77,7 +84,7 @@ int sizeConversor(char textSize[]){
 		}
 
 	}
-		size = coeficient*pow(2,power);
+		size = coeficient*(1 << power);
 
 	return size;
 }

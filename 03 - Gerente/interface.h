@@ -42,5 +42,7 @@ void otimize(DISK *drive);
 void EstimateUsage(DISK *drive);
 void printState(DISKUSAGE counter);
 void freeTheDisk(DISK **drive);
+void catenateFreeSpaceTest(NODE *candidate);
+void otimizeTest(DISK *drive);
 
 #endif

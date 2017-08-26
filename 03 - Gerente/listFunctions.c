@@ -57,7 +57,7 @@ void diskInitializer(DISK **drive, int freeSpace){
 }
 
 void freeTheDisk(DISK **drive){
-		if(*drive != NULL){
+	if(*drive != NULL){
 		NODE *aux = (*drive)->listHead;
 		NODE *aux2 = NULL;
 		while(aux->next != NULL){
@@ -185,6 +185,7 @@ void ArchiveInsertion(DISK *drive, char archiveName[], int ArchiveSize){
 					smallest->next->previous = NewArchive;
 				free(smallest);
 			}else{
+
 				smallest->previous->next = NewArchive;
 				NewArchive->next = smallest;
 				NewArchive->previous = smallest->previous;
@@ -211,17 +212,17 @@ void ArchiveRemover(DISK *drive, char archiveName[]){
 
 	NODE *aux = drive->listHead;
 
-	while(aux != NULL && strcmp(aux->arqName, archiveName) != 0)
+	while(aux != NULL){
+		if(strcmp(aux->arqName, archiveName) == 0){
+			aux->free = 1;
+			catenateFreeSpaceTest(aux);
+			return;
+		}
 		aux = aux->next;
-
-	if(aux == NULL){
-		return;
-	}else{
-		aux->free = 1;
-		strcpy(aux->arqName,"free");
-		catenateFreeSpaces(drive);
+		
 	}
-}
+
+} 
 
 void EstimateUsage(DISK *drive){
 	NODE *aux = drive->listHead;
@@ -267,12 +268,12 @@ void EstimateUsage(DISK *drive){
 void printState(DISKUSAGE counter){
 
 	double check = (double)counter.freeSize/(double)counter.total;
-	//printf("%lf\n", check);
-	if(check >= 0 && check <= .25){
+
+	if(check <= .25){
 		printf("[#]");
-	}else if(check > .25 && check <= .75){
+	}else if(check <= .75){
 		printf("[-]");
-	}else if(check > .75 && check <=100){
+	}else{
 		printf("[ ]");
 	}
 }
@@ -292,4 +293,77 @@ void catenateFreeSpaces(DISK *drive){
 			aux = aux->next;
 		}
 	}
+}
+
+void catenateFreeSpaceTest(NODE *candidate){
+
+	NODE *aux = NULL;
+
+	if((candidate)->next != NULL && (candidate)->next->free == 0 && (candidate)->previous != NULL && (candidate)->previous->free == 1){
+		(candidate)->previous->size += (candidate)->size;
+		(candidate)->previous->next = (candidate)->next;
+		(candidate)->next->previous = (candidate)->previous;
+		free(candidate);
+
+	}else if((candidate)->next != NULL && (candidate)->next->free == 1 && (candidate)->previous != NULL && (candidate)->previous->free == 0){
+		aux = (candidate)->next;
+		(candidate)->next->size += (candidate)->size;
+		(candidate)->previous->next = (candidate)->next;
+		(candidate)->next->previous = (candidate)->previous;
+		free(candidate);
+
+	}else if((candidate)->next != NULL && (candidate)->next->free == 1 && (candidate)->previous != NULL && (candidate)->previous->free == 1){
+		(candidate)->size += (candidate)->previous->size;
+		(candidate)->size += (candidate)->next->size;
+		if((candidate)->previous->previous != NULL)
+			(candidate)->previous->previous->next = (candidate);
+		aux = (candidate)->previous;
+		(candidate)->previous = (candidate)->previous->previous;
+		free(aux);
+		aux = (candidate)->next;
+		if((candidate)->next->next != NULL)
+			(candidate)->next->next->previous = (candidate);
+		(candidate)->next = (candidate)->next->next;
+		free(aux);
+	}
+}
+
+
+void otimizeTest(DISK *drive){
+
+	NODE *tail = drive->listHead;
+	NODE *aux = NULL;
+	int counter = 0;
+
+	while(tail->next != NULL){
+		if(tail->free == 1){
+			counter += tail->size;
+			if(tail == drive->listHead){
+				drive->listHead = tail->next;
+			}
+			if(tail->previous != NULL)
+				tail->previous->next = tail->next;
+			if(tail->next != NULL)
+				tail->next->previous = tail->previous;
+			aux = tail;
+			tail= tail->next;
+			free(aux);
+		}else{
+			tail= tail->next;
+		}
+	}
+
+	if(tail->free == 1){
+		tail->size += counter;
+	}else if (tail->free == 0 && counter > 0){
+		aux = malloc(sizeof(NODE));
+		aux->size = counter;
+		aux->next = NULL;
+		aux->previous = tail;
+		aux->free = 1;
+		strcpy(aux->arqName, "free");
+		tail->next = aux; 
+
+	}
+
 }
