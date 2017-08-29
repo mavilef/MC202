@@ -77,7 +77,7 @@ int main (){
 void refreshVector(vector *vec, int *begin, int *end){
 
 	if(vec->size < (vec->capacity)/4){
-		int *newSize = malloc((vec->capacity/4)*sizeof(int));
+		int *newSize = malloc((vec->capacity/2)*sizeof(int));
 		int i , j;
 		//copia os elementos do antigo vetor para o novo vetor 
 		//com o tamanho atualizado.
