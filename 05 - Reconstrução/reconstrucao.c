@@ -1,6 +1,8 @@
+//Marcelo Martins Vilela Filho RA 202619 - Engenharia de Computação
 #include<stdio.h>
 #include<string.h>
 #include<stdlib.h>
+#define SETSIZE 53
 
 typedef struct treeNode {
 
@@ -13,58 +15,83 @@ typedef struct treeNode {
 treeNode *rebuildTree(char *preOrder, char *inOrder, int sequenceStart, int sequenceEnd);
 void postOrderPrint(treeNode * tree);
 void destroyTree(treeNode * tree);
+//idx é uma variável global que servira para alterar indices durante a recursão
+//do rebuildTree.É global para zerarmos de uma recursão para outra, mas não
+//durante a chamada.
 
 int idx;
 
 int main()
 {
+  //declarações:
+  //*preOrderSequence é uma string que armazenará o input de pré-ordem.
+  //*InOrderSequence é uma string que armazenará o input de em-ordem.
+  //*tree será a raiz da arvore binária e apartir dela estruturaremos a arvore
 
-    char preOrderSequence[53], inOrderSequence[53];
+    char *preOrderSequence = malloc(SETSIZE*sizeof(char));
+    char *inOrderSequence = malloc(SETSIZE*sizeof(char));
     treeNode *tree = NULL;
+    //leitura dos inputs até o fim do buffer de entrada.
     while (scanf("%s %s", preOrderSequence, inOrderSequence) != EOF) {
-		idx = 0;
-		tree = rebuildTree(preOrderSequence, inOrderSequence, 0, strlen(preOrderSequence) - 1);
-		postOrderPrint(tree);
-		destroyTree(tree);
-		printf("\n");
+  		idx = 0;
+      //reconstrução da arvore apartir de preOrderSequence e InOrderSequence.
+  		tree = rebuildTree(preOrderSequence, inOrderSequence, 0, strlen(preOrderSequence) - 1);
+      //imprimir em pós ordem
+  		postOrderPrint(tree);
+      //destruir a arvore.
+  		destroyTree(tree);
+      tree = NULL;
+  		printf("\n");
     }
 
     return 0;
 }
 
 
-
+//reconstrução da arvore, aqui a lógica é usar as informações de pré-ordem e
+//em-ordem para gerar a arvore que as construiu.Sabemos que o primeiro caracter
+//de pré ordem é o pai(ou raiz), e as posições á esquerda da mesma chave em
+//em-ordem são os filhos á esquerda, do selecionado em pré-ordem, assim como
+//os da direita, estão á direita da chave de em-ordem.
+//Dentro dos filhos á direita e á esquerda aplicamos o mesmo algoritmo,
+//obtendo os outros pais e filhos recursivamente..
 treeNode *rebuildTree(char *preOrder, char *inOrder, int sequenceStart, int sequenceEnd){
 
+    //checa se estamos ultrapassando os limites da string, caso esteja não coloca
+    //nada no nó(NULL).
     if (sequenceStart > sequenceEnd)
-		return NULL;
-
+		  return NULL;
+    //Armazena o indice do meio da string analisada
     int nextEnd = 0;
+    //alocação do novo elemento e seleciona elemento em pré ordem.
     treeNode *newElement = malloc(sizeof(treeNode));
     newElement->letter = preOrder[idx++];
     newElement->left = NULL;
     newElement->right = NULL;
 
+    //quando a string analisada só possui um elemento.
     if (sequenceStart == sequenceEnd)
-		return newElement;
+		  return newElement;
 
     int i;
+    //encontra em em-ordem a primeira chave de pré ordem selecionada.
     for (i = sequenceStart; i <= sequenceEnd; i++)
-		if (newElement->letter == inOrder[i]) {
-		    nextEnd = i;
-		    break;
-		}
-
+  		if (newElement->letter == inOrder[i]) {
+  		    nextEnd = i;
+  		    break;
+  		}
+    //preenche recursivamente os filhos de cada nó.
     newElement->left = rebuildTree(preOrder, inOrder, sequenceStart, nextEnd - 1);
     newElement->right = rebuildTree(preOrder, inOrder, nextEnd + 1, sequenceEnd);
-    	return newElement;
+    return newElement;
 
 }
 
-void postOrderPrint(treeNode * tree){
+//Percorre a arvore no algoritmo pós ordem para impressão.
+void postOrderPrint(treeNode *tree){
 
     if (tree == NULL)
-		return;
+		  return;
 
     postOrderPrint(tree->left);
     postOrderPrint(tree->right);
@@ -72,11 +99,12 @@ void postOrderPrint(treeNode * tree){
 
 }
 
-void destroyTree(treeNode * tree){
+//Percorre a arvore no algoritmo pós ordem liberar cada nó da arvore.
+void destroyTree(treeNode *tree){
 
     if (tree == NULL)
-		return;
-	
+		  return;
+
     destroyTree(tree->left);
     destroyTree(tree->right);
     free(tree);
