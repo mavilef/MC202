@@ -30,12 +30,12 @@ int main()
     char *preOrderSequence = malloc(SETSIZE*sizeof(char));
     char *inOrderSequence = malloc(SETSIZE*sizeof(char));
     treeNode *tree = NULL;
-	int *idx = malloc(sizeof(int));
     //leitura dos inputs até o fim do buffer de entrada.
     while (scanf("%s %s", preOrderSequence, inOrderSequence) != EOF) {
-  		idx[0] = 0;
+  		int *idx = NULL;
       //reconstrução da arvore apartir de preOrderSequence e InOrderSequence.
   		tree = rebuildTree(preOrderSequence, inOrderSequence, 0, strlen(preOrderSequence) - 1, &idx);
+		free(idx);
       //imprimir em pós ordem
   		postOrderPrint(tree);
       //destruir a arvore.
@@ -46,7 +46,6 @@ int main()
 
 	free(preOrderSequence);
 	free(inOrderSequence);
-	free(idx);
     return 0;
 }
 
@@ -60,10 +59,16 @@ int main()
 //obtendo os outros pais e filhos recursivamente..
 treeNode *rebuildTree(char *preOrder, char *inOrder, int sequenceStart, int sequenceEnd, int **idx){
 
-    //checa se estamos ultrapassando os limites da string, caso esteja não coloca
+	if((*idx) == NULL){
+		(*idx) = malloc(sizeof(int));
+		(*idx)[0] = 0;
+	}
+
+    //checa se estamos ultrapassando os limites da string(ou seja, se a substring existe), caso esteja não coloca
     //nada no nó(NULL).
     if (sequenceStart > sequenceEnd)
 		  return NULL;
+
     //Armazena o indice do meio da string analisada
     int nextEnd = 0;
     //alocação do novo elemento e seleciona elemento em pré ordem.
