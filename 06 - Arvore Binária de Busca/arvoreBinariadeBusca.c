@@ -13,7 +13,7 @@ typedef struct binaryTreeNode{
 
 int insertElementIntheTree(binaryTreeNode **root, int elementToAdd);
 int searchElementIntheTree(binaryTreeNode *root, int elementToSearch);
-binaryTreeNode *deleteElementIntheTree(binaryTreeNode **root, int elementToDelete);
+binaryTreeNode *deleteElementIntheTree(binaryTreeNode *root, int elementToDelete);
 int minimumElement(binaryTreeNode *root);
 int maximumElement(binaryTreeNode *root);
 void postOrderTraversal(binaryTreeNode *root);
@@ -115,23 +115,25 @@ int searchElementIntheTree(binaryTreeNode *root, int elementToSearch){
 
 }
 
-binaryTreeNode* deleteElementIntheTree(binaryTreeNode *root int elementToDelete){
+binaryTreeNode* deleteElementIntheTree(binaryTreeNode *root , int elementToDelete){
+
+  binaryTreeNode *aux = NULL;
 
   if(root == NULL){
-    return NULL;
+    return root;
   }else if(root->data > elementToDelete){
     root->left = deleteElementIntheTree(root->left, elementToDelete);
   }else if(root->data < elementToDelete){
     root->right = deleteElementIntheTree(root->right, elementToDelete);
   }else{
     if(root->left != NULL && root->right != NULL){
-      binaryTreeNode *aux = root;
+      aux = root->left;
       while(aux->right != NULL)
         aux = aux->right;
       root->data =  aux->data;
       root->left = deleteElementIntheTree(root->left, root->data);
     }else{
-      binaryTreeNode *aux = root;
+      aux = root;
       if(root->left == NULL)
         root = root->right;
       if(root->right == NULL)
