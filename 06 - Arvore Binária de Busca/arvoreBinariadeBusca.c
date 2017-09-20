@@ -11,14 +11,15 @@ typedef struct binaryTreeNode{
 } binaryTreeNode;
 
 
-int insertElementIntheTree(binaryTreeNode **root, int elementToAdd);
-int searchElementIntheTree(binaryTreeNode *root, int elementToSearch);
+binaryTreeNode* insertElementIntheTree(binaryTreeNode *root, int elementToAdd);
+void searchElementIntheTree(binaryTreeNode *root, int elementToSearch);
 binaryTreeNode *deleteElementIntheTree(binaryTreeNode *root, int elementToDelete);
-int minimumElement(binaryTreeNode *root);
-int maximumElement(binaryTreeNode *root);
+void minimumElement(binaryTreeNode *root);
+void maximumElement(binaryTreeNode *root);
 void postOrderTraversal(binaryTreeNode *root);
 void inOrderTraversal(binaryTreeNode *root);
 void preOrderTraversal(binaryTreeNode *root);
+void destroyTree(binaryTreeNode *root);
 
 int main(){
 
@@ -30,12 +31,12 @@ int main(){
     if(!strcmp(operation, "inserir")){
       int element;
       scanf("%d", &element);
-      insertElementIntheTree(&root, element);
+      root = insertElementIntheTree(root, element);
 
     }else if(!strcmp(operation, "excluir")){
       int element;
       scanf("%d", &element);
-      deleteElementIntheTree(root, element);
+      root = deleteElementIntheTree(root, element);
 
 
     }else if(!strcmp(operation, "buscar")){
@@ -45,25 +46,28 @@ int main(){
 
 
     }else if(!strcmp(operation, "minimo")){
-
+      minimumElement(root);
 
     }else if(!strcmp(operation, "maximo")){
-
+      maximumElement(root);
 
     }else if(!strcmp(operation, "pos-ordem")){
-
+      postOrderTraversal(root);
+      printf("\n");
 
     }else if(!strcmp(operation, "em-ordem")){
-
+      inOrderTraversal(root);
+      printf("\n");
 
     }else if(!strcmp(operation, "pre-ordem")){
-
+      preOrderTraversal(root);
+      printf("\n");
 
     }else if(!strcmp(operation, "largura")){
 
     }else if(!strcmp(operation, "terminar")){
-
-
+      destroyTree(root);
+      break;
     }
 
 
@@ -72,45 +76,46 @@ int main(){
   return 0;
 }
 
-int insertElementIntheTree(binaryTreeNode **root, int elementToAdd){
+binaryTreeNode* insertElementIntheTree(binaryTreeNode *root, int elementToAdd){
 
-  binaryTreeNode *newNode = malloc(sizeof(binaryTreeNode));
-  if(newNode == NULL){
-    printf("memoria insuficiente\n");
-    return 0;
+  if(root == NULL){
+    root = malloc(sizeof(binaryTreeNode));
+    if(root == NULL){
+      printf("memoria insuficiente\n");
+    }else{
+
+      root->data = elementToAdd;
+      root->left = NULL;
+      root->right = NULL;
+    }
+
+  }else{
+
+    if(elementToAdd < root->data)
+      root->left =  insertElementIntheTree(root->left, elementToAdd);
+    else if(elementToAdd > root->data)
+      root->right = insertElementIntheTree(root->right, elementToAdd);
   }
-
-  newNode->data = elementToAdd;
-  newNode->left = NULL;
-  newNode->right = NULL;
-
-  if((*root) == NULL)
-      (*root) = newNode;
-
-  if((*root)->data > elementToAdd)
-    insertElementIntheTree((&(*root)->right), elementToAdd);
-  else if((*root)->data < elementToAdd)
-    insertElementIntheTree((&(*root)->left), elementToAdd);
-
-    return 1;
+  return root;
 }
 
-int searchElementIntheTree(binaryTreeNode *root, int elementToSearch){
+void searchElementIntheTree(binaryTreeNode *root, int elementToSearch){
   if(root == NULL){
-    return 0;
+    printf("nao pertence\n");
+    return;
   }else{
     while(root != NULL){
       if(elementToSearch == root->data){
         printf("pertence\n");
-        return 1;
+        return;
       }else if(elementToSearch > root->data){
-        root = root->left;
-      }else{
         root = root->right;
+      }else{
+        root = root->left;
       }
     }
     printf("nao pertence\n");
-    return 0;
+    return;
   }
 
 }
@@ -121,59 +126,70 @@ binaryTreeNode* deleteElementIntheTree(binaryTreeNode *root , int elementToDelet
 
   if(root == NULL){
     return root;
-  }else if(root->data > elementToDelete){
-    root->left = deleteElementIntheTree(root->left, elementToDelete);
-  }else if(root->data < elementToDelete){
+  }else if(elementToDelete > root->data){
     root->right = deleteElementIntheTree(root->right, elementToDelete);
+  }else if(elementToDelete < root->data){
+    root->left = deleteElementIntheTree(root->left, elementToDelete);
   }else{
-    if(root->left != NULL && root->right != NULL){
+
+    if(root->left == NULL){
+      aux = root->right;
+      free(root);
+      return aux;
+    }else if(root->right == NULL){
       aux = root->left;
-      while(aux->right != NULL)
-        aux = aux->right;
-      root->data =  aux->data;
-      root->left = deleteElementIntheTree(root->left, root->data);
-    }else{
-      aux = root;
-      if(root->left == NULL)
-        root = root->right;
-      if(root->right == NULL)
-        root = root->left;
-        free(aux);
+      free(root);
+      return aux;
     }
+    aux = root->right;
+    while(aux->left != NULL)
+      aux = aux->left;
+
+    root->data =  aux->data;
+    root->right = deleteElementIntheTree(root->right, root->data);
+
   }
 
   return root;
 
 }
 
-int minimumElement(binaryTreeNode *root){
-  if(root == NULL)
-    return 0;
-  if(root->left == NULL)
-    return root->data;
+void minimumElement(binaryTreeNode *root){
+  if(root == NULL){
+    printf("vazia\n");
+    return;
+  }
+  if(root->left == NULL){
+    printf("%d\n", root->data);
+    return;
+  }
   while(root->left != NULL)
     root = root->left;
 
-  return root->data;
+  printf("%d\n", root->data);
 }
 
-int maximumElement(binaryTreeNode *root){
-  if(root == NULL)
-    return 0;
-  if(root->right == NULL)
-    return root->data;
+void maximumElement(binaryTreeNode *root){
+  if(root == NULL){
+    printf("vazia\n");
+    return;
+  }
+  if(root->right == NULL){
+    printf("%d\n", root->data);
+    return;
+  }
   while(root->right != NULL)
     root = root->right;
 
-  return root->data;
+  printf("%d\n", root->data);
 }
 
 void postOrderTraversal(binaryTreeNode *root){
 
   if(root == NULL)
     return;
-  preOrderTraversal(root->left);
-  preOrderTraversal(root->right);
+  postOrderTraversal(root->left);
+  postOrderTraversal(root->right);
   printf("%d ", root->data);
 
 }
@@ -182,9 +198,9 @@ void inOrderTraversal(binaryTreeNode *root){
 
   if(root == NULL)
     return;
-  preOrderTraversal(root->left);
+  inOrderTraversal(root->left);
   printf("%d ", root->data);
-  preOrderTraversal(root->right);
+  inOrderTraversal(root->right);
 
 }
 
@@ -198,7 +214,16 @@ void preOrderTraversal(binaryTreeNode *root){
 }
 
 void levelOrderTraversal(binaryTreeNode *root){
+  return;
+}
 
+void destroyTree(binaryTreeNode *root){
 
+    if (root == NULL)
+		  return;
+
+    destroyTree(root->left);
+    destroyTree(root->right);
+    free(root);
 
 }
