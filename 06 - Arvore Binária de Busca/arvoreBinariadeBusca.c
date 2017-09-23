@@ -10,6 +10,12 @@ typedef struct binaryTreeNode{
 
 } binaryTreeNode;
 
+typedef struct queue{
+  int cap;
+  int size;
+  binaryTreeNode *vector;
+
+} queue;
 
 binaryTreeNode* insertElementIntheTree(binaryTreeNode *root, int elementToAdd);
 void searchElementIntheTree(binaryTreeNode *root, int elementToSearch);
@@ -25,6 +31,7 @@ int main(){
 
   char operation[50];
   binaryTreeNode *root = NULL;
+  int numberOfnodes = 0;
 
   while(scanf("%s", operation) != EOF){
 
@@ -52,15 +59,24 @@ int main(){
       maximumElement(root);
 
     }else if(!strcmp(operation, "pos-ordem")){
-      postOrderTraversal(root);
+      if(root)
+        postOrderTraversal(root);
+      else
+        printf("vazia");
       printf("\n");
 
     }else if(!strcmp(operation, "em-ordem")){
-      inOrderTraversal(root);
+      if(root)
+        inOrderTraversal(root);
+      else
+        printf("vazia");
       printf("\n");
 
     }else if(!strcmp(operation, "pre-ordem")){
-      preOrderTraversal(root);
+      if(root)
+        preOrderTraversal(root);
+      else
+        printf("vazia");
       printf("\n");
 
     }else if(!strcmp(operation, "largura")){
@@ -214,7 +230,24 @@ void preOrderTraversal(binaryTreeNode *root){
 }
 
 void levelOrderTraversal(binaryTreeNode *root){
-  return;
+
+  binaryTreeNode *aux = root;
+  queue levelOrderQueue;
+  levelOrderQueue->cap = 2;
+  levelOrderQueue->size = 1
+  levelOrderQueue->vector = calloc(2*sizeof(binaryTreeNode));
+
+  levelOrderQueue->vector[0] = aux; 
+  while(size != 0){
+    aux = levelOrderQueue->vector[0];
+    printf("%d ", aux->data);
+    levelOrderQueue->vector[]
+
+
+
+
+  }
+
 }
 
 void destroyTree(binaryTreeNode *root){
