@@ -27,6 +27,7 @@ int removeKeyOnDictionary(DICTIONARY *dictionary, unsigned char *word, unsigned 
 int hashingFunction(unsigned long key, int rehashIndex);
 int h1(unsigned long key);
 int h2(unsigned long key);
+void iWantToBreakFree(DICTIONARY *dictionary);
 
 int main(){
 
@@ -104,7 +105,7 @@ int main(){
     }
 
   }
-
+  iWantToBreakFree(dictionary);
   return 0;
 }
 
@@ -279,4 +280,13 @@ int removeKeyOnDictionary(DICTIONARY *dictionary, unsigned char *word, unsigned 
       }
     }
     return 1;
+}
+
+//Libera a memoria alocada pelo dicionário.
+void iWantToBreakFree(DICTIONARY *dictionary){
+  int i;
+  for(i = 0; i < DICTIONARYSIZE; i++){
+    free(dictionary[i].word);
+  }
+
 }
