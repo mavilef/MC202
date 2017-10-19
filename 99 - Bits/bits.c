@@ -6,6 +6,7 @@
 
 
 int createBitVector(char **bitPointer, int size);
+void addElement(char *bitVector, int elementToSet);
 
 int main(){
   char *bitVector = NULL;
