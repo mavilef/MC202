@@ -1,70 +1,110 @@
 #include<stdio.h>
 #include<stdlib.h>
-#define ROOMMAX 50
+#define MAXROOMS 50
 
-typedef struct EDGE{
-	int room;
-	struct EDGE *next;
-} EDGE;
+typedef struct ROOM{
+	int timeSoFar;
+	int fatherIndex;
+	int distanceToFather;
+	int isItALeaf;
+	int visited;
+}	ROOM;
 
-typedef struct GRAPH{
-	unsigned verticesNumber;
-	EDGE **edge;
-} GRAPH;
-
-GRAPH *initGraph();
-void addToGraph(GRAPH *base, int roomA, int roomB);
-void refreshWeightAcumulator(int* weightAcumulator, int *edgeWeight, int roomA, int roomB, int distance);
+void quickSort_leafs(ROOM *base, int low, int high, int *leafs);
+void swap_leafs(int * a, int * b);
+int partition_leafs(ROOM *base, int low, int high, int *leafs);
 
 int main(){
 
-	GRAPH *base = initGraph();
-
-	int operations, roomA, roomB, distance;
-	int *weightAcumulator = malloc(ROOMMAX*sizeof(int));
-	int *edgeWeight = malloc(ROOMMAX*sizeof(int)); 
-
+	ROOM *base = malloc(MAXROOMS*sizeof(ROOM));
+	int *leafs = malloc(MAXROOMS*sizeof(int));
+	int numberOfLeafs = 0;
+	int operations, A, B, timer, totalTime;
+	//leitura do input
 	while(scanf("%d", &operations) && operations != 0){
-		for(int i = 0; i < operations; i++){	
-			scanf("%d %d %d", &roomA, &roomB, &distance);
-			addToGraph(base, roomA, roomB);
-			refreshWeightAcumulator(weightAcumulator , edgeWeight, roomA, roomB, distance);
-		}
-		printf("%d", customDFS(base, weightAcumulator));
-		PrepareForTheNext(base);
-	}
-	freeGraph(&base);
 
+		totalTime = 0;
+		//inicializaçao do grafo.
+		for(int i = 0; i < MAXROOMS; i++){
+			base[i].timeSoFar = 0;
+			base[i].fatherIndex = 0;
+			base[i].visited = 0;
+			base[i].distanceToFather = 0;
+			base[i].isItALeaf = 0;
+		}
+
+		for(int i = 0; i < operations; i++){
+			scanf("%d %d %d", &A, &B, &timer);
+			base[B].fatherIndex = A;
+			base[B].distanceToFather = timer;
+			base[A].isItALeaf = 0;
+			base[B].isItALeaf = 1;
+			totalTime += 2*timer;
+		}
+
+		numberOfLeafs = 0;
+		for(int i = 0; i < MAXROOMS; i++){
+			if(base[i].isItALeaf == 1){
+				leafs[numberOfLeafs] = i;
+				numberOfLeafs++;
+			}
+		}
+
+		int aux, counter;
+		for(int i = 0; i < numberOfLeafs; i++){
+			aux = leafs[i];
+			counter = 0;
+			while(aux != 0){
+				counter += base[aux].distanceToFather;
+				aux = base[aux].fatherIndex;
+			}
+
+			base[leafs[i]].timeSoFar = counter; 
+		}
+
+
+		quickSort_leafs(base, 0, numberOfLeafs-1, leafs);
+
+		int aux2 = leafs[numberOfLeafs-1];
+
+		while(aux2 != 0){
+			totalTime -= base[aux2].distanceToFather;
+			aux2 = base[aux2].fatherIndex;
+		}
+		printf("%d\n", totalTime);
+
+	}
+	free(base);
 	return 0;
 }
 
-GRAPH *initGraph(){
-	GRAPH *new = malloc(sizeof(GRAPH));
-	new->verticesNumber = 0;
-	new->edge = malloc(ROOMMAX*sizeof(EDGE*));
+void quickSort_leafs(ROOM *base, int low, int high, int *leafs){
+    if (low < high) {
+		int pi = partition_leafs(base, low, high, leafs);
 
-	return new;
+		quickSort_leafs(base, low, pi - 1, leafs);
+		quickSort_leafs(base, pi + 1, high, leafs);
+    }
 }
 
-void addToGraph(GRAPH *base, int roomA, int roomB){
-	EDGE *new = malloc(sizeof(EDGE));
-	new->room = roomB;
-
-	for(EDGE *p = base->edge[roomB]; p->next != NULL; p = p->next)
-
-	p->next = new;
-
+void swap_leafs(int * a, int * b){
+    int t = *a;
+    *a = *b;
+    *b = t;
 }
 
-void refreshWeightAcumulator(int* weightAcumulator, int *edgeWeight, int roomA, int roomB, int distance){
-	weightAcumulator[roomA] += distance;
-	edgeWeight[roomB] = distance;
 
-}
+int partition_leafs(ROOM *base, int low, int high, int *leafs){
+    int pivot = base[leafs[high]].timeSoFar;
+    int i = (low - 1);
 
-int customDFS(GRAPH *base, int weightAcumulator){
+    for (int j = low; j <= high - 1; j++) {
+		if (base[leafs[j]].timeSoFar <= pivot) {
+		    i++;
+		    swap_leafs(&leafs[i], &leafs[j]);
+		}
+    }
+    swap_leafs(&leafs[i + 1], &leafs[high]);
 
-
-
-
+    return (i + 1);
 }
